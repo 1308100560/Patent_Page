@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<!--测试使用的html页面，对应main.py中的 @app.get("/greet/{name}") 及其衍生路由-->
+<!--当你访问 http://127.0.0.1:8000/greet/John 时，你应该会看到页面显示“Hello, John!”-->
+<!--当你访问 http://127.0.0.1:8000/greet/John/50000 时，你应该会看到页面显示“Hello, John! Your power is 50100.”-->
+<!--当你访问 http://127.0.0.1:8000/greet/John/50000/1000 时，你应该会看到页面显示“Hello, John! Your power is 51000.”-->
+<head>
+    <title>Greet Page</title>
+</head>
+
+<body>
+<h1>{{ greeting }}</h1>
+</body>
+</html>

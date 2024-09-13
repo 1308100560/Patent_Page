@@ -1,0 +1,144 @@
+package service
+
+import (
+	"errors"
+	"fmt"
+	"github.com/go-admin-team/go-admin-core/sdk/service"
+	"go-admin/app/user-agent/models"
+	"go-admin/app/user-agent/service/dto"
+)
+
+type PatentPackage struct {
+	service.Service
+}
+
+// GetPatentIdByPackageId 通过PackageId获得PatentId
+func (e *PatentPackage) GetPatentIdByPackageId(c *dto.PackagePageGetReq, list *[]models.PatentPackage, count *int64) error {
+	var err error
+	var data models.PatentPackage
+
+	err = e.Orm.Model(&data).
+		Where("Package_Id = ?", c.PackageId).
+		Find(list).Limit(-1).Offset(-1).
+		Count(count).Error
+
+	if err != nil {
+		e.Log.Errorf("db error:%s", err)
+		return err
+	}
+	return nil
+}
+
+func (e *PatentPackage) GetPatentIDsByPackageID(packageID int) ([]int, error) {
+	var err error
+	var data models.PatentPackage
+	var list []models.PatentPackage
+
+	err = e.Orm.Model(&data).
+		Where("Package_Id = ?", packageID).
+		Find(&list).Limit(-1).Offset(-1).
+		Error
+
+	if err != nil {
+		e.Log.Errorf("db error:%s", err)
+		return nil, err
+	}
+
+	var ids []int
+	for _, rela := range list {
+		ids = append(ids, rela.PatentId)
+	}
+
+	return ids, err
+}
+
+// InsertPatentPackage 创建专利标签关系
+func (e *PatentPackage) InsertPatentPackage(c *dto.PatentPackageReq) error {
+	var err error
+	var data models.PatentPackage
+	var i int64
+	err = e.Orm.Model(&data).Where("PNM = ? AND Package_Id = ? ", c.PNM, c.PackageId).
+		Count(&i).Error
+	if err != nil {
+		e.Log.Errorf("db error: %s", err)
+		return err
+	}
+	if i > 0 {
+		err := errors.New("关系已存在！")
+		e.Log.Errorf("db error: %s", err)
+		return err
+	}
+
+	c.GeneratePackagePatent(&data)
+
+	err = e.Orm.Create(&data).Error
+	if err != nil {
+		e.Log.Errorf("db error: %s", err)
+		return err
+	}
+	return nil
+}
+
+// RemovePackagePatent 根据专利和专利包id删除专利包关系
+func (e *PatentPackage) RemovePackagePatent(c *dto.PackagePageGetReq) error {
+	var err error
+	var data models.PatentPackage
+
+	db := e.Orm.Where("PNM = ? AND Package_Id = ? ", c.PNM, c.PackageId).
+		Delete(&data)
+
+	if db.Error != nil {
+		err = db.Error
+		e.Log.Errorf("Delete error: %s", err)
+		return err
+	}
+	return nil
+}
+
+// IsPatentInPackage 判断专利是否在专利包中
+func (e *PatentPackage) IsPatentInPackage(c *dto.PatentPackageReq) (bool, error) {
+	var err error
+	var data models.PatentPackage
+	var i int64
+
+	err = e.Orm.Model(&data).Where("PNM = ? AND Package_Id = ? ", c.PNM, c.PackageId).
+		Count(&i).Error
+	if err != nil {
+		e.Log.Errorf("db error: %s", err)
+		return false, err
+	}
+	if i > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (e *PatentPackage) UpdatePackagePatentDesc(c *dto.PatentDescReq) error {
+	var err error
+	var data models.PatentPackage
+	var i int64
+	err = e.Orm.Model(&data).Where("PNM = ? AND Package_Id = ?", c.PNM, c.PackageID).
+		Count(&i).Error
+	if err != nil {
+		e.Log.Errorf("db error: %s", err)
+		return err
+	}
+	if i == 0 {
+		err = fmt.Errorf("%w, (p:%d, u:%d) not existed", ErrConflictBindPatent, c.PNM, c.UserId)
+		e.Log.Errorf("db error: %s", err)
+		return err
+	}
+
+	c.GeneratePatentPackage(&data)
+	update := e.Orm.Model(&data).Where("PNM = ? AND Package_Id = ?", c.PNM, c.PackageID).Updates(&data)
+	if err = update.Error; err != nil {
+		e.Log.Errorf("db error: %s", err)
+		return err
+	}
+	if update.RowsAffected == 0 {
+		err = fmt.Errorf("update desc for patent %s failed", c.PNM)
+		e.Log.Errorf("db update error")
+		return err
+	}
+	return nil
+}

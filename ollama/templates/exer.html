@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专利提交</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        nav a {
+            float: left;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .container {
+            padding: 20px 90px;
+            margin: 20px;
+            height: 760px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        h1, h2 {
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <!--  标题  -->
+    <h3>xx项目</h3>
+</header>
+<div style="margin: auto; width: 70%; height:900px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
+
+    <!--  顶栏  -->
+<!--    <nav>-->
+<!--        <a style="width:21%" href="#">首页</a>-->
+<!--        <a style="width:21%" href="#">表头2</a>-->
+<!--        <a style="width:21%" href="#">表头3</a>-->
+<!--        <a style="width:21%" href="#">表头4</a>-->
+<!--    </nav>-->
+
+    <div class="container">
+        <!--  表单提交  -->
+        <!--  统一资源定位符：http://127.0.0.1:8000/submit-form，换句话说提交去往 @app.post("/submit-form")  -->
+        <form action="http://127.0.0.1:8002/submit-form" method="post">
+            <h2>发明名称</h2>
+                        <p>
+                            <!--标题，第一个框，name="title"-->
+                            <input type="text" name="str1"
+                                   style="width: 35%; height: 30px; border-radius: 5px; border: 1px solid #ccc; padding: 5px; font-size: 16px;">
+                        </p>
+
+            <h2>技术方案</h2>
+                        <p>
+                            <textarea name="str2" rows="4" cols="50" placeholder="请根据以下格式输入内容：格式xxxxx"
+                                    style="width: 700px; height: 100px;resize: none;"></textarea>
+                        </p>
+
+            <h2>产生效果</h2>
+                        <p>
+                            <textarea name="str3" rows="4" cols="50" placeholder="请根据以下格式输入内容：格式xxxxx"
+                                    style="width: 700px; height: 100px;resize: none;"></textarea>
+                        </p>
+
+            <!--            <h2>使用模型</h2>-->
+            <!--            <p>-->
+            <!--                &lt;!&ndash;模型选择，第二个框，name="model"&ndash;&gt;-->
+            <!--                <input type="radio" name="model" value="model1" checked>模型1 <br>-->
+            <!--                <input type="radio" name="model" value="model2">模型2 <br>-->
+            <!--                <input type="radio" name="model" value="model3">模型3 <br>-->
+            <!--            </p>-->
+
+            <h2>具体实施例</h2>
+            <p>
+                <!--输入的内容，第三个大框，文本域，name="message"-->
+                <textarea name="str4" rows="4" cols="50" placeholder="请根据以下格式输入内容：格式xxxxx"
+                          style="width: 700px; height: 150px;resize: none;"></textarea>
+            </p>
+            <!--  提交按钮  -->
+            <input type="submit" value="提交">
+        </form>
+
+    </div>
+</div>
+<footer>
+    <!--  装饰  -->
+    <p>版权 </p>
+</footer>
+
+</body>
+</html>
